@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: [ubuntu-latest]
     strategy:
       matrix:
         python-version: ["3.9", "3.11", "pypy3.10"]
@@ -25,9 +25,11 @@ jobs:
           make check
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v5.0.0
-        if: github.ref_name == 'main'
+        if: github.event_name != 'pull_request'
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: make test-coverage
           debug: true
+      - name: Debug coverage.xml
+        run: ls -la coverage.xml
