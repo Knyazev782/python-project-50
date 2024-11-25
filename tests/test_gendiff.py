@@ -1,5 +1,4 @@
 from gendiff.scripts.gendiff import generate_diff
-import os
 
 
 def write_temp_file(file_name, content):
@@ -22,8 +21,8 @@ def test_gendiff_different_files():
 
 
 def test_gendiff_one_empty_file():
-    write_temp_file("file1.json",'{"key": "value1"}')
-    write_temp_file("file2.json",'{}')
+    write_temp_file("file1.json", '{"key": "value1"}')
+    write_temp_file("file2.json", '{}')
     expected_result = "{\n  - key: value1\n}"
     assert generate_diff("file1.json", "file2.json") == expected_result
 
