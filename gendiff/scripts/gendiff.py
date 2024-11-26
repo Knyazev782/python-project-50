@@ -1,16 +1,11 @@
 import argparse
-import json
-
-
-def read_json_file(address_file):
-    with open(address_file, 'r') as file:
-        return json.load(file)
+from gendiff.scripts.get_parsing_files import parse_file
 
 
 def generate_diff(path_file1, path_file2):
     result = []
-    read_file1 = read_json_file(path_file1)
-    read_file2 = read_json_file(path_file2)
+    read_file1 = parse_file(path_file1)
+    read_file2 = parse_file(path_file2)
     keys = sorted(read_file1.keys() | read_file2.keys())
     for key in keys:
         if key in read_file1 and key in read_file2:
