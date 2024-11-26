@@ -1,5 +1,5 @@
 from gendiff.scripts.gendiff import generate_diff
-import pytest
+
 
 
 def test_gendiff_equal_files(tmp_path):
