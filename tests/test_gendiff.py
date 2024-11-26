@@ -1,7 +1,6 @@
 from gendiff.scripts.gendiff import generate_diff
 
 
-
 def test_gendiff_equal_files(tmp_path):
     file1 = tmp_path / "file1.json"
     file2 = tmp_path / "file2.json"
