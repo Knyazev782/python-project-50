@@ -1,3 +1,8 @@
-timeout: 20
-verbose: true
-host: hexlet.io
+common:
+  setting1: Value 1
+  setting3: null
+  setting4: blah blah
+  setting6:
+    doge:
+      wow: "so much"
+    ops: vops
