@@ -3,6 +3,7 @@ import yaml
 
 
 def get_parse_file(file_path):
+    file_path = str(file_path)
     extension = file_path.split('.')[-1]
     if extension == 'json':
         with open(file_path, 'r') as file:

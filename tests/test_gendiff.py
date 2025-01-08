@@ -46,3 +46,18 @@ def test_generate_diff_empty(tmp_path):
     file2_path.write_text("{}")
     expected = "{}"
     assert generate_diff(str(file1_path), str(file2_path)) == expected
+
+
+def test_generate_diff_plain(tmp_path):
+    file1_path = tmp_path / "file1.json"
+    file2_path = tmp_path / "file2.json"
+    file1_path.write_text('{"key1": "value1"}')
+    file2_path.write_text('{"key1": "value2", "key2": "value3"}')
+
+    expected = (
+        "Property 'key1' was updated. From 'value1' to 'value2'\n"
+        "Property 'key2' was added with value: 'value3'"
+    )
+
+    result = generate_diff(str(file1_path), str(file2_path), format='plain')
+    assert result == expected
