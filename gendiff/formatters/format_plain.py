@@ -14,13 +14,15 @@ def format_plain(diff, parent=''):
             status = node['status']
             if status == ADDED:
                 value = format_value(node['value'])
-                lines.append(f"Property '{path}' was added with value: {value}")
+                lines.append(f"Property '{path}' "
+                             f"was added with value: {value}")
             elif status == REMOVED:
                 lines.append(f"Property '{path}' was removed")
             elif status == CHANGED:
                 old_value = format_value(node['old_value'])
                 new_value = format_value(node['new_value'])
-                lines.append(f"Property '{path}' was updated. From {old_value} to {new_value}")
+                lines.append(f"Property '{path}' "
+                             f"was updated. From {old_value} to {new_value}")
             elif status == NESTED:
                 lines.append(format_plain(node['children'], path))
     else:
@@ -29,13 +31,15 @@ def format_plain(diff, parent=''):
             status = node['status']
             if status == ADDED:
                 value = format_value(node['value'])
-                lines.append(f"Property '{path}' was added with value: {value}")
+                lines.append(f"Property '{path}' "
+                             f"was added with value: {value}")
             elif status == REMOVED:
                 lines.append(f"Property '{path}' was removed")
             elif status == CHANGED:
                 old_value = format_value(node['old_value'])
                 new_value = format_value(node['new_value'])
-                lines.append(f"Property '{path}' was updated. From {old_value} to {new_value}")
+                lines.append(f"Property '{path}' "
+                             f"was updated. From {old_value} to {new_value}")
             elif status == NESTED:
                 lines.append(format_plain(node['children'], path))
     return '\n'.join(lines)

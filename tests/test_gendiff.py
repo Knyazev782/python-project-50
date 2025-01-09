@@ -61,3 +61,27 @@ def test_generate_diff_plain(tmp_path):
 
     result = generate_diff(str(file1_path), str(file2_path), format='plain')
     assert result == expected
+
+
+def test_format_json():
+    diff = {
+        'key1': {'status': 'changed',
+                 'old_value': 'value1', 'new_value': 'value2'},
+        'key2': {'status': 'added', 'value': 'value3'},
+    }
+
+    expected = (
+        '{\n'
+        '    "key1": {\n'
+        '        "status": "changed",\n'
+        '        "old_value": "value1",\n'
+        '        "new_value": "value2"\n'
+        '    },\n'
+        '    "key2": {\n'
+        '        "status": "added",\n'
+        '        "value": "value3"\n'
+        '    }\n'
+        '}'
+    )
+
+    assert generate_diff(diff, {}, format='json') == expected

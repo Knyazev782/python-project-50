@@ -3,6 +3,7 @@ from gendiff.scripts.build_diff import build_diff
 import argparse
 from gendiff.formatters.format_plain import format_plain
 from gendiff.formatters.format_stylish import format_stylish
+from gendiff.formatters.format_json import format_json
 
 
 def generate_diff(file_path1, file_path2, format='stylish'):
@@ -13,12 +14,19 @@ def generate_diff(file_path1, file_path2, format='stylish'):
         return format_plain(diff)
     elif format == 'stylish':
         return format_stylish(diff)
+    elif format == 'json':
+        return format_json(diff)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate diff for two files.')
-    parser.add_argument('first_file', type=str, help='Path to the first file')
-    parser.add_argument('second_file', type=str, help='Path to the second file')
+    parser = argparse.ArgumentParser(
+        description='Generate diff for two files.')
+    parser.add_argument('first_file',
+                        type=str,
+                        help='Path to the first file')
+    parser.add_argument('second_file',
+                        type=str,
+                        help='Path to the second file')
     parser.add_argument(
         '-f', '--format',
         default='stylish',

@@ -25,4 +25,3 @@ def test_format_plain():
     )
     result = format_plain(diff)
     assert result == expected
-
