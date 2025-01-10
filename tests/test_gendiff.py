@@ -63,13 +63,11 @@ def test_generate_diff_plain(tmp_path):
     assert result == expected
 
 
-def test_format_json():
-    diff = {
-        'key1': {'status': 'changed',
-                 'old_value': 'value1', 'new_value': 'value2'},
-        'key2': {'status': 'added', 'value': 'value3'},
-    }
-
+def test_format_json(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+    file1.write_text('{"key1": "value1"}')
+    file2.write_text('{"key1": "value2", "key2": "value3"}')
     expected = (
         '{\n'
         '    "key1": {\n'
@@ -83,5 +81,5 @@ def test_format_json():
         '    }\n'
         '}'
     )
-
-    assert generate_diff(diff, {}, format='json') == expected
+    result = generate_diff(str(file1), str(file2), format='json')
+    assert result == expected
