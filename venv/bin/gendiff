@@ -1,6 +1,6 @@
 #!/home/vipknyaz1488/python-project-50/venv/bin/python
 import sys
-from gendiff.scripts.gendiff import main
+from gendiff.gendiff import main
 
 if __name__ == '__main__':
     sys.exit(main())
