@@ -5,37 +5,42 @@ UNCHANGED = "unchanged"
 NESTED = "nested"
 
 
+def format_added(path, value):
+    formatted_value = format_value(value)
+    return f"Property '{path}' was added with value: {formatted_value}"
+
+
+def format_removed(path):
+    return f"Property '{path}' was removed"
+
+
+def format_changed(path, old_value, new_value):
+    formatted_old = format_value(old_value)
+    formatted_new = format_value(new_value)
+    return (
+        f"Property '{path}' was updated. "
+        f"From {formatted_old} to {formatted_new}"
+    )
+
+
+def format_nested(children, path):
+    return format_plain(children, path)
+
+
+def process_node(node, path):
+    status = node['status']
+    if status == ADDED:
+        return format_added(path, node['value'])
+    elif status == REMOVED:
+        return format_removed(path)
+    elif status == CHANGED:
+        return format_changed(path, node['old_value'], node['new_value'])
+    elif status == NESTED:
+        return format_nested(node['children'], path)
+    return None
+
+
 def format_plain(diff, parent=''):
-    def process_node(node, path):
-        status = node['status']
-        if status == ADDED:
-            return format_added(path, node['value'])
-        elif status == REMOVED:
-            return format_removed(path)
-        elif status == CHANGED:
-            return format_changed(path, node['old_value'], node['new_value'])
-        elif status == NESTED:
-            return format_nested(node['children'], path)
-        return None
-
-    def format_added(path, value):
-        formatted_value = format_value(value)
-        return f"Property '{path}' was added with value: {formatted_value}"
-
-    def format_removed(path):
-        return f"Property '{path}' was removed"
-
-    def format_changed(path, old_value, new_value):
-        formatted_old = format_value(old_value)
-        formatted_new = format_value(new_value)
-        return (
-            f"Property '{path}' was updated. "
-            f"From {formatted_old} to {formatted_new}"
-        )
-
-    def format_nested(children, path):
-        return format_plain(children, path)
-
     lines = []
     if isinstance(diff, list):
         for node in diff:
