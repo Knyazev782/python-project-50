@@ -1,61 +1,4 @@
-ADDED = "added"
-REMOVED = "removed"
-CHANGED = "changed"
-UNCHANGED = "unchanged"
-NESTED = "nested"
-
-
-def format_added(path, value):
-    formatted_value = format_value(value)
-    return f"Property '{path}' was added with value: {formatted_value}"
-
-
-def format_removed(path):
-    return f"Property '{path}' was removed"
-
-
-def format_changed(path, old_value, new_value):
-    formatted_old = format_value(old_value)
-    formatted_new = format_value(new_value)
-    return (
-        f"Property '{path}' was updated. "
-        f"From {formatted_old} to {formatted_new}"
-    )
-
-
-def format_nested(children, path):
-    return format_plain(children, path)
-
-
-def process_node(node, path):
-    status = node['status']
-    if status == ADDED:
-        return format_added(path, node['value'])
-    elif status == REMOVED:
-        return format_removed(path)
-    elif status == CHANGED:
-        return format_changed(path, node['old_value'], node['new_value'])
-    elif status == NESTED:
-        return format_nested(node['children'], path)
-    return None
-
-
-def format_plain(diff, parent=''):
-    lines = []
-    if isinstance(diff, list):
-        for node in diff:
-            key = node['key']
-            path = f"{parent}.{key}" if parent else key
-            line = process_node(node, path)
-            if line:
-                lines.append(line)
-    else:
-        for key, node in diff.items():
-            path = f"{parent}.{key}" if parent else key
-            line = process_node(node, path)
-            if line:
-                lines.append(line)
-    return '\n'.join(lines)
+from gendiff import constans as cons
 
 
 def format_value(value):
@@ -64,7 +7,32 @@ def format_value(value):
     elif isinstance(value, bool):
         return str(value).lower()
     elif value is None:
-        return 'null'
+        return cons.NULL_REPRESENTATION
     elif isinstance(value, str):
         return f"'{value}'"
     return str(value)
+
+
+def format_plain(diff, path=''):
+    lines = []
+    for node in diff:
+        current_path = f"{path}.{node['key']}" if path else node['key']
+
+        if node['status'] == cons.NESTED:
+            nested_lines = format_plain(node['children'], current_path)
+            if nested_lines:
+                lines.append(nested_lines)
+        elif node['status'] == cons.ADDED:
+            value = format_value(node['value'])
+            lines.append(f"Property '{current_path}' was added with value: {value}")
+        elif node['status'] == cons.REMOVED:
+            lines.append(f"Property '{current_path}' was removed")
+        elif node['status'] == cons.CHANGED:
+            old_value = format_value(node['old_value'])
+            new_value = format_value(node['new_value'])
+            lines.append(
+                f"Property '{current_path}' was updated. "
+                f"From {old_value} to {new_value}"
+            )
+
+    return '\n'.join(lines)

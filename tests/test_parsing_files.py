@@ -1,21 +1,25 @@
-import tempfile
 import json
-from gendiff.scripts.parsing_files import get_parse_file
+from pathlib import Path
+import pytest
+from gendiff.core.parsing_files import get_parse_file
+
+FIXTURES_PATH = Path(__file__).parent / 'fixtures'
 
 
-def test_get_parse_file_json():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json',
-                                     delete=False) as temp_file:
-        temp_file.write(json.dumps({"key": "value"}))
-        temp_file_path = temp_file.name
-    result = get_parse_file(temp_file_path)
-    assert result == {"key": "value"}
+def test_parse_json():
+    data = get_parse_file(FIXTURES_PATH / 'file1.json')
+    assert data['common']['setting1'] == 'Value 1'
+    assert data['group1']['baz'] == 'bas'
 
 
-def test_get_parse_file_yaml():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml',
-                                     delete=False) as temp_file:
-        temp_file.write("key: value\n")
-        temp_file_path = temp_file.name
-    result = get_parse_file(temp_file_path)
-    assert result == {"key": "value"}
+def test_parse_yaml():
+    data = get_parse_file(FIXTURES_PATH / 'file1.yml')
+    assert data['common']['setting1'] == 'Value 1'
+    assert data['group1']['baz'] == 'bas'
+
+
+def test_parse_unsupported_format(tmp_path):
+    unsupported = tmp_path / 'file.txt'
+    unsupported.write_text('test')
+    with pytest.raises(ValueError):
+        get_parse_file(unsupported)

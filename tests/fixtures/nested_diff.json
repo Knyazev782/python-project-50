@@ -1,0 +1,15 @@
+[
+    {
+        "key": "a",
+        "status": "nested",
+        "children": [
+            {
+                "key": "b",
+                "status": "nested",
+                "children": [
+                    {"key": "c", "status": "changed", "old_value": 1, "new_value": 2}
+                ]
+            }
+        ]
+    }
+]

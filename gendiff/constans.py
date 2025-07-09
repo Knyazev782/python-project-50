@@ -1,0 +1,9 @@
+DEPTH_INCREMENT = 1
+INTERNAL_KEY = 'key'
+IDENT = 4
+ADDED = "added"
+REMOVED = "removed"
+CHANGED = "changed"
+UNCHANGED = "unchanged"
+NESTED = "nested"
+NULL_REPRESENTATION = 'null'

@@ -1,85 +1,33 @@
+import json
+from pathlib import Path
+import pytest
 from gendiff.gendiff import generate_diff
 
+FIXTURES_PATH = Path(__file__).parent / 'fixtures'
 
-def test_generate_diff_json(tmp_path):
-    file1_path = tmp_path / "file1.json"
-    file2_path = tmp_path / "file2.json"
-    file1_content = '{"a": 1, "b": 2}'
-    file2_content = '{"b": 2, "c": 3}'
-    file1_path.write_text(file1_content)
-    file2_path.write_text(file2_content)
-    expected = "{\n  - a: 1\n    b: 2\n  + c: 3\n}"
-    assert generate_diff(str(file1_path), str(file2_path)) == expected
+def load_fixture(name):
+    with open(FIXTURES_PATH / name) as f:
+        return f.read().strip()
 
+@pytest.fixture
+def file1_json():
+    return FIXTURES_PATH / 'file1.json'
 
-def test_generate_diff_yaml(tmp_path):
-    file1_path = tmp_path / "file1.yaml"
-    file2_path = tmp_path / "file2.yaml"
-    file1_content = "a: 1\nb: 2\n"
-    file2_content = "b: 2\nc: 3\n"
-    file1_path.write_text(file1_content)
-    file2_path.write_text(file2_content)
-    expected = "{\n  - a: 1\n    b: 2\n  + c: 3\n}"
-    assert generate_diff(str(file1_path), str(file2_path)) == expected
+@pytest.fixture
+def file2_json():
+    return FIXTURES_PATH / 'file2.json'
 
-
-def test_generate_diff_nested(tmp_path):
-    file1_path = tmp_path / "file1.json"
-    file2_path = tmp_path / "file2.json"
-    file1_path.write_text('{"a": {"x": 1}, "b": 2}')
-    file2_path.write_text('{"a": {"x": 2}, "b": 2, "c": 3}')
-    expected = """{
-    a: {
-      - x: 1
-      + x: 2
-    }
-    b: 2
-  + c: 3
-}"""
-    assert generate_diff(str(file1_path), str(file2_path)) == expected
-
-
-def test_generate_diff_empty(tmp_path):
-    file1_path = tmp_path / "file1.json"
-    file2_path = tmp_path / "file2.json"
-    file1_path.write_text("{}")
-    file2_path.write_text("{}")
-    expected = "{}"
-    assert generate_diff(str(file1_path), str(file2_path)) == expected
-
-
-def test_generate_diff_plain(tmp_path):
-    file1_path = tmp_path / "file1.json"
-    file2_path = tmp_path / "file2.json"
-    file1_path.write_text('{"key1": "value1"}')
-    file2_path.write_text('{"key1": "value2", "key2": "value3"}')
-
-    expected = (
-        "Property 'key1' was updated. From 'value1' to 'value2'\n"
-        "Property 'key2' was added with value: 'value3'"
-    )
-
-    result = generate_diff(str(file1_path), str(file2_path), format='plain')
+def test_generate_diff_stylish(file1_json, file2_json):
+    result = generate_diff(file1_json, file2_json)
+    expected = load_fixture('stylish_result')
     assert result == expected
 
-
-def test_format_json(tmp_path):
-    file1 = tmp_path / "file1.json"
-    file2 = tmp_path / "file2.json"
-    file1.write_text('{"key1": "value1"}')
-    file2.write_text('{"key1": "value2", "key2": "value3"}')
-    expected = (
-        '{\n'
-        '    "key1": {\n'
-        '        "status": "changed",\n'
-        '        "old_value": "value1",\n'
-        '        "new_value": "value2"\n'
-        '    },\n'
-        '    "key2": {\n'
-        '        "status": "added",\n'
-        '        "value": "value3"\n'
-        '    }\n'
-        '}'
-    )
-    result = generate_diff(str(file1), str(file2), format='json')
+def test_generate_diff_plain(file1_json, file2_json):
+    result = generate_diff(file1_json, file2_json, format='plain')
+    expected = load_fixture('plain_result')
     assert result == expected
+
+def test_generate_diff_json(file1_json, file2_json):
+    result = generate_diff(file1_json, file2_json, format='json')
+    expected = load_fixture('json_result.json')
+    assert json.loads(result) == json.loads(expected)

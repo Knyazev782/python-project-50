@@ -1,36 +1,41 @@
-from gendiff.scripts.format_value import format_value
+from gendiff.core.format_value import format_value
+from gendiff import constans as cons
 
-ADDED = "added"
-REMOVED = "removed"
-CHANGED = "changed"
-UNCHANGED = "unchanged"
-NESTED = "nested"
-
+SIGN_MAP = {
+    cons.ADDED: '  + ',
+    cons.REMOVED: '  - ',
+    cons.UNCHANGED: '    '
+}
 
 def format_stylish(diff, depth=0):
     if not diff:
-        return "{}"
-    indent = "    " * depth
-    result = ["{"]
+        return '{}'
+
+    indent = '    ' * depth
+    lines = ['{']
+
     for item in diff:
         key = item['key']
         status = item['status']
-        if status == ADDED:
-            result.append(f"{indent}  + {key}: "
-                          f"{format_value(item['value'], depth + 1)}")
-        elif status == REMOVED:
-            result.append(f"{indent}  - {key}: "
-                          f"{format_value(item['value'], depth + 1)}")
-        elif status == UNCHANGED:
-            result.append(f"{indent}    {key}: "
-                          f"{format_value(item['value'], depth + 1)}")
-        elif status == CHANGED:
-            result.append(f"{indent}  - {key}: "
-                          f"{format_value(item['old_value'], depth + 1)}")
-            result.append(f"{indent}  + {key}: "
-                          f"{format_value(item['new_value'], depth + 1)}")
-        elif status == NESTED:
-            result.append(f"{indent}    {key}: "
-                          f"{format_stylish(item['children'], depth + 1)}")
-    result.append(f"{indent}}}")
-    return "\n".join(result)
+        current_indent = indent + '    '
+
+        if status == cons.NESTED:
+            value = format_stylish(item['children'], depth + cons.DEPTH_INCREMENT)
+            lines.append(f"{current_indent}{key}: {value}")
+        elif status == cons.CHANGED:
+            old_val = format_value(item['old_value'], depth + cons.DEPTH_INCREMENT)
+            new_val = format_value(item['new_value'], depth + cons.DEPTH_INCREMENT)
+            if item['old_value'] == "":
+                lines.append(f"{indent}  - {key}:")
+            else:
+                lines.append(f"{indent}  - {key}: {old_val}")
+            lines.append(f"{indent}  + {key}: {new_val}")
+        else:
+            value = format_value(item['value'], depth + cons.DEPTH_INCREMENT)
+            if item.get('value') == "":
+                lines.append(f"{indent}{SIGN_MAP[status]}{key}:")
+            else:
+                lines.append(f"{indent}{SIGN_MAP[status]}{key}: {value}")
+
+    lines.append(f"{indent}}}")
+    return '\n'.join(lines)

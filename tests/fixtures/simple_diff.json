@@ -1,0 +1,5 @@
+[
+    {"key": "a", "status": "removed", "value": 1},
+    {"key": "b", "status": "unchanged", "value": 2},
+    {"key": "c", "status": "added", "value": 3}
+]

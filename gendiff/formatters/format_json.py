@@ -1,16 +1,22 @@
 import json
+from gendiff import constans as cons
 
 
 def format_json(diff):
-    def process_node(node):
-        if node.get('status') == 'nested':
-            children = {child['key']: process_node(child)
-                        for child in node.get('children', [])}
-            return {
-                "status": "nested",
-                "children": children
-            }
+    def build_tree(node):
+        result = {
+            'key': node['key'],
+            'status': node['status']
+        }
+
+        if node['status'] == cons.NESTED:
+            result['children'] = [build_tree(child) for child in node['children']]
+        elif node['status'] == cons.CHANGED:
+            result['old_value'] = node['old_value']
+            result['new_value'] = node['new_value']
         else:
-            return {key: value for key, value in node.items() if key != 'key'}
-    result = {item['key']: process_node(item) for item in diff}
-    return json.dumps(result, indent=4)
+            if 'value' in node:
+                result['value'] = node['value']
+        return result
+
+    return json.dumps([build_tree(item) for item in diff], indent=4)
